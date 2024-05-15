@@ -1,0 +1,24 @@
+version: '2'
+
+connectNE:
+  apimanager:
+    build: ./apimanager
+    command: bash -c "python ./apimanager/manage.py makemigrations && python ./apimanager/manage.py migrate && python3 ./apimanager/manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/api
+    ports:
+      - 8001:8001
+    restart: always
+    depends_on:
+      - sqlite3
+    links:
+      - sqlite3
+
+  nginx:
+    build: ./web
+    ports:
+      - 80:80
+    links:
+      - apimanager
+    depends_on:
+      - apimanager
